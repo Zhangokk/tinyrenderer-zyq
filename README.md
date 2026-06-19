@@ -1,6 +1,7 @@
 # tinyrenderer-zyq
 
-这是我的 TinyRenderer 造轮子项目。目标是用 C++ 从零实现一个 CPU 软光栅渲染器，把图形学基础真正写出来。
+用 C++ 从零实现一个 CPU 软光栅渲染器，
+
 
 ## 当前目标
 
@@ -22,7 +23,7 @@
 E:\github\tinyrenderer-zyq\tinyrenderer-zyq.sln
 ```
 
-选择 `Debug | x64`，点击“本地 Windows 调试器”。运行成功后生成：
+
 
 ```text
 output\first.ppm
