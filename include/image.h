@@ -14,7 +14,9 @@ public:
 
     void clear(Color color);
     void setPixel(int x, int y, Color color);
+    void drawLine(int x0, int y0, int x1, int y1, Color color);
     bool writePPM(const std::string& path) const;
+    bool writeBMP(const std::string& path) const;
 
 private:
     int width_ = 0;

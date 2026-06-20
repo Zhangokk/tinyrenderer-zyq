@@ -9,17 +9,23 @@ int main() {
     Image image(width, height, Color(18, 20, 28));
 
     // First tiny renderer milestone: write pixels into an image buffer.
+    image.drawLine(width / 2, height / 2 + 1, width-2, height-2, Color(255, 70, 70));
     image.setPixel(width / 2, height / 2, Color(255, 70, 70));
     image.setPixel(width / 2 + 1, height / 2, Color(255, 70, 70));
     image.setPixel(width / 2, height / 2 + 1, Color(255, 70, 70));
     image.setPixel(width / 2 + 1, height / 2 + 1, Color(255, 70, 70));
 
-    const std::string output_path = "output/first.ppm";
-    if (!image.writePPM(output_path)) {
-        std::cerr << "Failed to write " << output_path << std::endl;
+    const std::string bmp_path = "output/first.bmp";
+    const std::string ppm_path = "output/first.ppm";
+
+    if (!image.writeBMP(bmp_path)) {
+        std::cerr << "Failed to write " << bmp_path << std::endl;
         return 1;
     }
 
-    std::cout << "Wrote " << output_path << std::endl;
+    // Keep PPM output as a simple debug format for later renderer tests.
+    image.writePPM(ppm_path);
+
+    std::cout << "Wrote " << bmp_path << std::endl;
     return 0;
 }
