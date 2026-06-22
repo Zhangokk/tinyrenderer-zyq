@@ -1,7 +1,6 @@
 # tinyrenderer-zyq
 
-用 C++ 从零实现一个 CPU 软光栅渲染器，
-
+用 C++ 从零实现一个 CPU 软光栅渲染器
 
 ## 当前目标
 
@@ -9,7 +8,7 @@
 - [x] 定义 `Color` 和 `Image`
 - [x] 实现 `setPixel(x, y, color)`
 - [x] 输出第一张 `PPM` 图片
-- [ ] 实现画线算法
+- [x] 实现画线算法
 - [ ] 实现三角形线框
 - [ ] 实现三角形填充
 - [ ] 实现 Z-buffer
@@ -22,8 +21,6 @@
 ```text
 E:\github\tinyrenderer-zyq\tinyrenderer-zyq.sln
 ```
-
-
 
 ```text
 output\first.ppm
@@ -39,6 +36,8 @@ output/     渲染输出图片
 notes/      每日学习日志
 ```
 
-## 今日理解
+## 完成情况
 
-当前程序没有调用 OpenGL。它直接在 CPU 内存里维护一张图片，通过 `setPixel` 写入像素，然后把像素数据保存成 PPM 图片。这就是软光栅渲染器的起点。
+- [x] Bresenham画线算法
+
+  ![image-20260622103049601](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20260622103049601.png)
