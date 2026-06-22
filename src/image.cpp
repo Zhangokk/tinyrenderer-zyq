@@ -57,21 +57,43 @@ void Image::setPixel(int x, int y, Color color) {
 }
 
 void Image::drawLine(int x0, int y0, int x1, int y1, Color color) {
-    const int dx = std::abs(x1 - x0);
+    bool steep = false;
+
+    if (std::abs(x1 - x0) < std::abs(y1 - y0)) {
+        std::swap(x1, y1);
+        std::swap(x0, y0);
+        steep = true;
+    }
+    if (x0 > x1) {
+        std::swap(x0, x1);
+        std::swap(y0, y1);
+    }
+
+    const int dx = x1 - x0;
     const int dy = std::abs(y1 - y0);
-    const int steps = std::max(dx, dy);
+    int error = 2 * dy - dx;
+    int y = y0;
+    const int y_step = (y0 < y1) ? 1 : -1;
 
-    if (steps == 0) {
-        setPixel(x0, y0, color);
-        return;
+    for (int x = x0; x < x1; x++) {
+        if (steep) {
+            setPixel(y, x, color);
+        }
+        else {
+            setPixel(x, y, color);
+        }
+
+        if (error > 0) {
+            y += y_step;
+            error += 2 * (dy - dx);
+        }
+        else {
+            error += 2 * dy;
+        }
     }
 
-    for (int i = 0; i <= steps; ++i) {
-        const float t = static_cast<float>(i) / static_cast<float>(steps);
-        const int x = static_cast<int>(std::round(x0 + t * (x1 - x0)));
-        const int y = static_cast<int>(std::round(y0 + t * (y1 - y0)));
-        setPixel(x, y, color);
-    }
+    
+    
 }
 
 bool Image::writePPM(const std::string& path) const {

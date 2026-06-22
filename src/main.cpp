@@ -8,8 +8,10 @@ int main() {
 
     Image image(width, height, Color(18, 20, 28));
 
-    // First tiny renderer milestone: write pixels into an image buffer.
+ 
     image.drawLine(width / 2, height / 2 + 1, width-2, height-2, Color(255, 70, 70));
+    image.drawLine(0, height / 2 + 1, width / 2, height - 2, Color(70, 70, 70));
+
     image.setPixel(width / 2, height / 2, Color(255, 70, 70));
     image.setPixel(width / 2 + 1, height / 2, Color(255, 70, 70));
     image.setPixel(width / 2, height / 2 + 1, Color(255, 70, 70));
