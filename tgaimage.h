@@ -1,5 +1,7 @@
 #pragma once
 
+#include "geometry.h"
+
 #include <algorithm>
 #include <cstdint>
 #include <string>
@@ -46,6 +48,7 @@ public:
     TGAImage(int width, int height, int bytespp);
 
     bool set(int x, int y, const TGAColor &color);
+    void drawLine(Vec2i a, Vec2i b, const TGAColor &color);
     bool write_tga_file(const std::string &filename, bool vflip = true) const;
 
     int get_width() const;

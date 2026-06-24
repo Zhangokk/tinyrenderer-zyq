@@ -1,72 +1,69 @@
-﻿#include <cmath>
-#include <tuple>
-#include "geometry.h"
 #include "model.h"
-#include "image.h"
 
-constexpr int width = 800;
-constexpr int height = 800;
+#include <fstream>
+#include <sstream>
+#include <string>
 
-constexpr  Color white = { 255, 255, 255 }; // attention, BGRA order
-constexpr  Color green = { 0, 255,   0, 255 };
-constexpr  Color red = { 0,   0, 255, 255 };
-constexpr  Color blue = { 255, 128,  64, 255 };
-constexpr  Color yellow = { 0, 200, 255, 255 };
-
-void line(int ax, int ay, int bx, int by, Image& framebuffer, Color color) {
-    bool steep = std::abs(ax - bx) < std::abs(ay - by);
-    if (steep) { // if the line is steep, we transpose the image
-        std::swap(ax, ay);
-        std::swap(bx, by);
+// 读取一个 OBJ 模型文件。
+// 当前只关心两类行：
+// v x y z  表示一个三维顶点
+// f a b c  表示一个三角面，由三个顶点索引组成
+Model::Model(const std::string &filename) {
+    std::ifstream in(filename);
+    if (!in) {
+        return;
     }
-    if (ax > bx) { // make it left−to−right
-        std::swap(ax, bx);
-        std::swap(ay, by);
-    }
-    int y = ay;
-    int ierror = 0;
-    for (int x = ax; x <= bx; x++) {
-        if (steep) // if transposed, de−transpose
-            framebuffer.set(y, x, color);
-        else
-            framebuffer.set(x, y, color);
-        ierror += 2 * std::abs(by - ay);
-        if (ierror > bx - ax) {
-            y += by > ay ? 1 : -1;
-            ierror -= 2 * (bx - ax);
+
+    std::string line;
+    //getline 按行读取 ，读取到的内容保存到line里面
+    while (std::getline(in, line)) {
+        //将line里的内容拷贝一份
+        std::istringstream iss(line);
+        std::string prefix;
+        //prefix读取第一个空格之前的内容
+        iss >> prefix;
+
+        if (prefix == "v") {
+            // 顶点行：把 x、y、z 读进 vec3，然后存到 verts_。
+            vec3 v;
+            
+            iss >> v.x >> v.y >> v.z;
+            verts_.push_back(v);
+        } else if (prefix == "f") {
+            // 面行：OBJ 的面索引可能长这样：f 1 2 3，也可能长这样：f 1/1/1 2/2/2 3/3/3。
+            // 这里用 token_stream >> int，只读取斜杠前面的顶点索引。
+            std::vector<int> face;
+            std::string token;
+            while (iss >> token) {
+                std::istringstream token_stream(token);
+                int vertex_index = 0;
+                token_stream >> vertex_index;
+
+                // OBJ 文件里的顶点索引从 1 开始，C++ vector 下标从 0 开始，所以要减 1。
+                face.push_back(vertex_index - 1);
+            }
+            if (face.size() >= 3) {
+                faces_.push_back(face);
+            }
         }
     }
 }
 
-std::tuple<int, int> project(vec3 v) { // First of all, (x,y) is an orthogonal projection of the vector (x,y,z).
-    return { (v.x + 1.) * width / 2,   // Second, since the input models are scaled to have fit in the [-1,1]^3 world coordinates,
-             (v.y + 1.) * height / 2 }; // we want to shift the vector (x,y) and then scale it to span the entire screen.
+int Model::nverts() const {
+    return static_cast<int>(verts_.size());
 }
 
-int main(int argc, char** argv) {
-    if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " obj/model.obj" << std::endl;
-        return 1;
-    }
+int Model::nfaces() const {
+    return static_cast<int>(faces_.size());
+}
 
-    Model model(argv[1]);
-    TGAImage framebuffer(width, height, TGAImage::RGB);
+// 返回第 i 个顶点。
+vec3 Model::vert(int i) const {
+    return verts_[i];
+}
 
-    for (int i = 0; i < model.nfaces(); i++) { // iterate through all triangles
-        auto [ax, ay] = project(model.vert(i, 0));
-        auto [bx, by] = project(model.vert(i, 1));
-        auto [cx, cy] = project(model.vert(i, 2));
-        line(ax, ay, bx, by, framebuffer, red);
-        line(bx, by, cx, cy, framebuffer, red);
-        line(cx, cy, ax, ay, framebuffer, red);
-    }
-
-    for (int i = 0; i < model.nverts(); i++) { // iterate through all vertices
-        vec3 v = model.vert(i);            // get i-th vertex
-        auto [x, y] = project(v);          // project it to the screen
-        framebuffer.set(x, y, white);
-    }
-
-    framebuffer.write_tga_file("framebuffer.tga");
-    return 0;
+// 返回第 iface 个面里的第 nthvert 个顶点。
+// 例如 vert(i, 0)、vert(i, 1)、vert(i, 2) 就是第 i 个三角形的三个顶点。
+vec3 Model::vert(int iface, int nthvert) const {
+    return verts_[faces_[iface][nthvert]];
 }

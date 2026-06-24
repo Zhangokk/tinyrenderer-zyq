@@ -1,15 +1,24 @@
 #pragma once
-#include <vector>
-#include "geometry.h"
-#include <string>
 
+#include "geometry.h"
+
+#include <string>
+#include <vector>
+
+// Model 只负责把 OBJ 文件解析成两部分数据：
+// 1. verts_：所有顶点坐标
+// 2. faces_：每个三角面引用了哪些顶点
 class Model {
-    std::vector<vec3> verts = {};    // array of vertices
-    std::vector<int> facet_vrt = {}; // per-triangle index in the above array
 public:
-    Model(const std::string filename);
-    int nverts() const; // number of vertices
-    int nfaces() const; // number of triangles
-    vec3 vert(const int i) const;                          // 0 <= i < nverts()
-    vec3 vert(const int iface, const int nthvert) const;   // 0 <= iface <= nfaces(), 0 <= nthvert < 3
+    explicit Model(const std::string &filename);
+
+    int nverts() const;
+    int nfaces() const;
+
+    vec3 vert(int i) const;
+    vec3 vert(int iface, int nthvert) const;
+
+private:
+    std::vector<vec3> verts_;
+    std::vector<std::vector<int>> faces_;
 };
