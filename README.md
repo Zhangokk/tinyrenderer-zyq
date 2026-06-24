@@ -5,14 +5,14 @@
 ## 当前目标
 
 - [x] 创建 Visual Studio C++ 项目
-- [x] 定义 `Color` 和 `Image`
+- [x] 定义 tgaimage`
 - [x] 实现 `setPixel(x, y, color)`
-- [x] 输出第一张 `PPM` 图片
+- [x] 输出第一张 `tga` 图片
 - [x] 实现画线算法
-- [ ] 实现三角形线框
+- [x] 定义model类
 - [ ] 实现三角形填充
 - [ ] 实现 Z-buffer
-- [ ] 加载 OBJ 模型
+- [x] 加载 OBJ 模型
 
 ## 如何运行
 
@@ -23,7 +23,7 @@ E:\github\tinyrenderer-zyq\tinyrenderer-zyq.sln
 ```
 
 ```text
-output\first.ppm
+output\first.tga
 ```
 
 ## 目录结构
@@ -41,3 +41,8 @@ notes/      每日学习日志
 - [x] Bresenham画线算法
 
   ![image-20260622103049601](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20260622103049601.png)
+
+- [x] 加载obj 画线框
+
+  ![image-20260624104632166](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20260624104632166.png)
+
