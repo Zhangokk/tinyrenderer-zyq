@@ -36,7 +36,11 @@ void drawTriangle(int ax, int ay, int bx, int by, int cx, int cy, TGAImage& fram
     int bbminy = std::min(std::min(ay, by), cy); // defined by its top left and bottom right corners
     int bbmaxx = std::max(std::max(ax, bx), cx);
     int bbmaxy = std::max(std::max(ay, by), cy);
+   
+   
     double total_area = signed_triangle_area(ax, ay, bx, by, cx, cy);
+    if (total_area < 1) return; // backface culling + discarding triangles that cover less than a pixel
+
 
 #pragma omp parallel for
     for (int x = bbminx; x <= bbmaxx; x++) {
@@ -50,7 +54,7 @@ void drawTriangle(int ax, int ay, int bx, int by, int cx, int cy, TGAImage& fram
     }
 }
 
-int main() {
+int main(int argc, char** argv) {
     // 运行程序时需要传入 obj 文件路径，例如：
     // .\x64\Debug\tinyrenderer-zyq.exe .\assets\diablo3_pose.obj
     //if (argc != 2) {
@@ -60,31 +64,24 @@ int main() {
 
     // Model 负责读取 obj 文件里的顶点和面。
     // framebuffer 是我们自己的图像缓冲区，后面所有像素都会写到它里面。
-    //Model model(argv[1]);
+    Model model(argv[1]);
     TGAImage framebuffer(width, height, TGAImage::RGB);
 
-    //**绘制三角形**
-    Vec2i a = { 60,100 };
-    Vec2i b = { 200,20 };
-    Vec2i c = { 120,300 };
-    drawTriangle(a.x,a.y,b.x,b.y,c.x,c.y, framebuffer,green);
 
     //**模型画线**
     // 遍历模型的每一个三角面。
     // 每个面有 3 个顶点，把 3 个顶点投影到屏幕后，用 drawLine 画三条边。
     // 这就是线框渲染：只画三角形边界，不填充三角形内部。
-    //for (int i = 0; i < model.nfaces(); i++) {
-    //    Vec2i a = project(model.vert(i, 0));
-    //    Vec2i b = project(model.vert(i, 1));
-    //    Vec2i c = project(model.vert(i, 2));
+     for (int i = 0; i < model.nfaces(); i++) {
+        Vec2i a = project(model.vert(i, 0));
+        Vec2i b = project(model.vert(i, 1));
+        Vec2i c = project(model.vert(i, 2));
+        TGAColor rnd;
+        for (int c = 0; c < 3; c++) rnd[c] = std::rand() % 255;
+        drawTriangle(a.x, a.y, b.x, b.y, c.x, c.y, framebuffer, rnd);
 
-    //    // drawLine 是前面 Bresenham 直线算法实现好的基础能力。
-    //    // 模型读取阶段不重新造画线逻辑，只复用这个接口。
-    //    framebuffer.drawLine(a, b, red);
-    //    framebuffer.drawLine(b, c, red);
-    //    framebuffer.drawLine(c, a, red);
-    //}
+     }
     // 把内存中的 framebuffer 写成 TGA 图片文件。
-    framebuffer.write_tga_file("triangle.tga");
+    framebuffer.write_tga_file("modelriangle.tga");
     return 0;
 }
